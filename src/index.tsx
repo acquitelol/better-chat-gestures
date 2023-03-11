@@ -1,13 +1,14 @@
-import { findByDisplayName, findByProps } from "@vendetta/metro";
-import { before } from "@vendetta/patcher";
-import { DefaultNativeEvent ,DoubleTapStateProps, NativeEvent, Plugin } from "./types";
+import { findByDisplayName, findByProps, findByStoreName } from "@vendetta/metro";
+import { after, instead } from "@vendetta/patcher";
+import { DefaultNativeEvent, DoubleTapStateProps, Plugin, NativeEvent } from "./types";
 
-const Chat = findByDisplayName("Chat", false);
+const Chat = findByDisplayName("Chat");
+const ChatInputRef = findByProps("insertText");
+const MessageStore = findByStoreName("MessageStore");
+const UserStore = findByStoreName("UserStore");
 const Messages = findByProps("sendMessage", "startEditMessage");
-const MessageStore = findByProps("getMessage", "getMessages");
-const UserStore = findByProps("getUser", "getCurrentUser")
 
-const DoubleTapToEdit: Plugin = {
+const BetterChatGestures: Plugin = {
     unpatchChat: null,
     currentTapIndex: 0,
 
@@ -36,8 +37,26 @@ const DoubleTapToEdit: Plugin = {
     },
 
     onLoad() {
-        this.unpatchChat = before("default", Chat, (args) => {
-            args[0].onTapMessage = (arg: { nativeEvent: DefaultNativeEvent }) => {
+        this.unpatchChat = after("render", Chat.prototype, (_, res) => {
+            if (!res.props?.onTapUsername) return;
+
+            instead("onTapUsername", res.props, ([ arg ]) => {
+                const ChatInput = ChatInputRef.refs[0].current;
+                const { messageId } = arg.nativeEvent;
+    
+                const message = MessageStore.getMessage(
+                    ChatInput.props?.channel?.id,
+                    messageId
+                )
+    
+                if (!message) return;
+                const existingText = ChatInput?.applicationCommandManager?.props?.text
+                ChatInputRef.setText(`${existingText ?? ""}${existingText ? " " : ""}@${message.author.username}#${message.author.discriminator}`)
+            });
+
+            instead("onTapMessage", res.props, ([ arg ]) => {
+                const { nativeEvent }: { nativeEvent: DefaultNativeEvent } = arg;
+
                 this.currentTapIndex++;
     
                 let timeoutTap = setTimeout(() => {
@@ -56,7 +75,7 @@ const DoubleTapToEdit: Plugin = {
                     isAuthor: message?.author?.id === UserStore.getCurrentUser()?.id
                 });
     
-                if ((arg.nativeEvent as NativeEvent)?.authorId !== UserStore.getCurrentUser()?.id
+                if ((nativeEvent as NativeEvent)?.authorId !== UserStore.getCurrentUser()?.id
                     || this.currentTapIndex !== 2) return this.doubleTapState({ 
                         state: "INCOMPLETE", 
                         nativeEvent: arg.nativeEvent
@@ -73,13 +92,14 @@ const DoubleTapToEdit: Plugin = {
                     MessageID,
                     MessageContent
                 );
+
                 this.currentTapIndex = 0;
                 this.doubleTapState({ 
                     state: "COMPLETE", 
                     nativeEvent: arg.nativeEvent 
                 })
-            }
-        })
+            })
+        });
     },
 
     onUnload() {
@@ -87,4 +107,4 @@ const DoubleTapToEdit: Plugin = {
     }
 }
 
-export default DoubleTapToEdit;
+export default BetterChatGestures;

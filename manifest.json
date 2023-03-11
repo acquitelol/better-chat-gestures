@@ -1,14 +1,14 @@
 {
-    "name": "Double Tap To Edit",
-    "description": "I wonder what this does :3",
+    "name": "BetterChatGestures",
+    "description": "Adds several new gestures in the chat. Incompatible with DoubleTapToReact, but that's a terrible experiment anyway.",
     "authors": [
         {
             "name": "Rosie<3",
             "id": "581573474296791211"
         }
     ],
-    "main": "src/index.ts",
+    "main": "src/index.tsx",
     "vendetta": {
-        "icon": "ic_message_edit"
+        "icon": "ic_chat"
     }
 }
