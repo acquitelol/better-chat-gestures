@@ -56,6 +56,8 @@ const BetterChatGestures: Plugin = {
 
             instead("onTapMessage", res.props, ([ arg ]) => {
                 const { nativeEvent }: { nativeEvent: DefaultNativeEvent } = arg;
+                const ChannelID = nativeEvent.channelId;
+                const MessageID = nativeEvent.messageId;
 
                 this.currentTapIndex++;
     
@@ -63,10 +65,7 @@ const BetterChatGestures: Plugin = {
                     this.currentTapIndex = 0;
                 }, 300);
     
-                const message = MessageStore.getMessage(
-                    arg.nativeEvent.channelId, 
-                    arg.nativeEvent.messageId
-                )
+                const message = MessageStore.getMessage(ChannelID, MessageID);
     
                 Object.assign(arg.nativeEvent, { 
                     taps: this.currentTapIndex, 
@@ -78,14 +77,11 @@ const BetterChatGestures: Plugin = {
                 if ((nativeEvent as NativeEvent)?.authorId !== UserStore.getCurrentUser()?.id
                     || this.currentTapIndex !== 2) return this.doubleTapState({ 
                         state: "INCOMPLETE", 
-                        nativeEvent: arg.nativeEvent
+                        nativeEvent
                     });
     
                 clearTimeout(timeoutTap);
-    
-                const ChannelID = arg.nativeEvent.channelId;
-                const MessageID = arg.nativeEvent.messageId;
-                const MessageContent = (arg.nativeEvent as NativeEvent).content;
+                const MessageContent = (nativeEvent as NativeEvent).content;
     
                 Messages.startEditMessage(
                     ChannelID,
@@ -96,7 +92,7 @@ const BetterChatGestures: Plugin = {
                 this.currentTapIndex = 0;
                 this.doubleTapState({ 
                     state: "COMPLETE", 
-                    nativeEvent: arg.nativeEvent 
+                    nativeEvent 
                 })
             })
         });
