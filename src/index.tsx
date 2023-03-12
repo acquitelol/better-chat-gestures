@@ -1,5 +1,8 @@
 import { findByDisplayName, findByProps, findByStoreName } from "@vendetta/metro";
+import { ReactNative } from "@vendetta/metro/common";
 import { after, instead } from "@vendetta/patcher";
+import { storage } from "@vendetta/plugin";
+import Settings from "./components/Settings";
 import { DefaultNativeEvent, DoubleTapStateProps, Plugin, NativeEvent } from "./types";
 
 const Chat = findByDisplayName("Chat");
@@ -37,12 +40,22 @@ const BetterChatGestures: Plugin = {
     },
 
     onLoad() {
-        this.unpatchChat = after("render", Chat.prototype, (_, res) => {
-            if (!res.props?.onTapUsername) return;
+        // initialize
+        storage.tapUsernameMention ??= ReactNative.Platform.select({
+            android: false,
+            ios: true,
+            default: true
+        })
+        storage.doubleTapToEdit ??= true;
 
-            instead("onTapUsername", res.props, ([ arg ]) => {
+        // patch chat area to modify methods
+        this.unpatchChat = after("render", Chat.prototype, (_, res) => {
+            // patch username tapping to mention user instead
+            res.props?.onTapUsername && instead("onTapUsername", res?.props, (args, orig) => {
+                if (!storage.tapUsernameMention) return orig.apply(this, args);
+
                 const ChatInput = ChatInputRef.refs[0].current;
-                const { messageId } = arg.nativeEvent;
+                const { messageId } = args[0].nativeEvent;
     
                 const message = MessageStore.getMessage(
                     ChatInput.props?.channel?.id,
@@ -50,12 +63,14 @@ const BetterChatGestures: Plugin = {
                 )
     
                 if (!message) return;
-                const existingText = ChatInput?.applicationCommandManager?.props?.text
-                ChatInputRef.setText(`${existingText ?? ""}${existingText ? " " : ""}@${message.author.username}#${message.author.discriminator}`)
+                ChatInputRef.insertText(`@${message.author.username}#${message.author.discriminator}`)
             });
 
-            instead("onTapMessage", res.props, ([ arg ]) => {
-                const { nativeEvent }: { nativeEvent: DefaultNativeEvent } = arg;
+            // patch tapping a message to require 2 taps and author and provide edit event if both conditions are met
+            res.props?.onTapMessage && instead("onTapMessage", res?.props, (args, orig) => {
+                if (!storage.doubleTapToEdit) return orig.apply(this, args);
+
+                const { nativeEvent }: { nativeEvent: DefaultNativeEvent } = args[0];
                 const ChannelID = nativeEvent.channelId;
                 const MessageID = nativeEvent.messageId;
 
@@ -67,7 +82,7 @@ const BetterChatGestures: Plugin = {
     
                 const message = MessageStore.getMessage(ChannelID, MessageID);
     
-                Object.assign(arg.nativeEvent, { 
+                Object.assign(nativeEvent, { 
                     taps: this.currentTapIndex, 
                     content: message?.content,
                     authorId: message?.author?.id,
@@ -89,6 +104,8 @@ const BetterChatGestures: Plugin = {
                     MessageContent
                 );
 
+                ChatInputRef.focus();
+
                 this.currentTapIndex = 0;
                 this.doubleTapState({ 
                     state: "COMPLETE", 
@@ -100,7 +117,9 @@ const BetterChatGestures: Plugin = {
 
     onUnload() {
         this.unpatchChat?.();
-    }
+    },
+
+    settings: Settings
 }
 
 export default BetterChatGestures;

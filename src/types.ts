@@ -29,4 +29,5 @@ export interface Plugin {
     doubleTapState: (arg: DoubleTapStateProps) => void;
     onLoad: () => void;
     onUnload: () => void;
+    settings: React.ComponentType
 }
