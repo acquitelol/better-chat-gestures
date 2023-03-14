@@ -51,24 +51,26 @@ const BetterChatGestures: Plugin = {
         // patch chat area to modify methods
         this.unpatchChat = after("render", Chat.prototype, (_, res) => {
             // patch username tapping to mention user instead
-            res.props?.onTapUsername && instead("onTapUsername", res?.props, (args, orig) => {
-                if (!storage.tapUsernameMention) return orig.apply(this, args);
+            Boolean(res.props?.onTapUsername) 
+                && ReactNative.Platform.OS !== "android" 
+                && instead("onTapUsername", res?.props, (args, orig) => {
+                    if (!storage.tapUsernameMention) return orig.apply(this, args);
 
-                const ChatInput = ChatInputRef.refs[0].current;
-                const { messageId } = args[0].nativeEvent;
-    
-                const message = MessageStore.getMessage(
-                    ChatInput.props?.channel?.id,
-                    messageId
-                )
-    
-                if (!message) return;
-                ChatInputRef.insertText(`@${message.author.username}#${message.author.discriminator}`)
-            });
+                    const ChatInput = ChatInputRef.refs[0].current;
+                    const { messageId } = args[0].nativeEvent;
+        
+                    const message = MessageStore.getMessage(
+                        ChatInput.props?.channel?.id,
+                        messageId
+                    )
+        
+                    if (!message) return;
+                    ChatInputRef.insertText(`@${message.author.username}#${message.author.discriminator}`)
+                });
 
             // patch tapping a message to require 2 taps and author and provide edit event if both conditions are met
-            res.props?.onTapMessage && instead("onTapMessage", res?.props, (args, orig) => {
-                if (!storage.doubleTapToEdit) return orig.apply(this, args);
+            Boolean(res.props?.onTapMessage) && after("onTapMessage", res?.props, (args) => {
+                if (!storage.doubleTapToEdit) return;
 
                 const { nativeEvent }: { nativeEvent: DefaultNativeEvent } = args[0];
                 const ChannelID = nativeEvent.channelId;

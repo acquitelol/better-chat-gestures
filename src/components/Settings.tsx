@@ -8,6 +8,7 @@ import SectionWrapper from "./Dependent/SectionWrapper";
 import { Icons, Miscellaneous, Constants } from "../Common";
 import { findByProps } from '@vendetta/metro';
 import { semanticColors } from '@vendetta/ui';
+import { ReactNative } from '@vendetta/metro/common';
 
 const { FormRow, FormSwitch, FormDivider } = Forms;
 const { ScrollView, View, Text } = General;
@@ -63,7 +64,7 @@ export default () => {
       <View style={{marginTop: 20}}>
          <SectionWrapper label='Preferences'>
             <View style={[styles.container]}>
-               <FormRow
+               {ReactNative.Platform.OS !== "android" && <FormRow
                   label="Tap Username to Mention"
                   subLabel="Allows you to tap on a username to mention them instead of opening their profile."
                   onLongPress={() => Miscellaneous.displayToast(`By default, Discord opens a profile when tapping on a username in chat. With this, it now mentions them, like on Android.`, 'tooltip')}
@@ -75,7 +76,7 @@ export default () => {
                         setTapUsernameMention(storage.tapUsernameMention);
                      }}
                   />}
-               />
+               />}
                <FormDivider />
                <FormRow
                   label="Double Tap to Edit"
