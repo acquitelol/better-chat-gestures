@@ -1,11 +1,11 @@
-import { findByDisplayName, findByProps, findByStoreName } from "@vendetta/metro";
+import { findByName, findByProps, findByStoreName } from "@vendetta/metro";
 import { ReactNative } from "@vendetta/metro/common";
 import { after, instead } from "@vendetta/patcher";
 import { storage } from "@vendetta/plugin";
 import Settings from "./components/Settings";
 import { DefaultNativeEvent, DoubleTapStateProps, Plugin, NativeEvent } from "./types";
 
-const Chat = findByDisplayName("Chat");
+const Chat = findByName("Chat");
 const ChatInputRef = findByProps("insertText");
 const MessageStore = findByStoreName("MessageStore");
 const UserStore = findByStoreName("UserStore");
