@@ -54,7 +54,7 @@ export default () => {
    useProxy(storage);
 
    const [tapUsernameMention, setTapUsernameMention] = React.useState(storage.tapUsernameMention);
-   const [doubleTapToEdit, setDoubleTapToEdit] = React.useState(storage.doubleTapToEdit);
+   const [reply, setReply] = React.useState(storage.reply);
 
    return <ScrollView>
       <Credits 
@@ -79,15 +79,15 @@ export default () => {
                />}
                <FormDivider />
                <FormRow
-                  label="Double Tap to Edit"
-                  subLabel="Allows you to tap double tap on any of your messages to edit them."
+                  label={`Double Tap To ${reply ? "Reply" : "Edit"}`}
+                  subLabel={`Allows you to tap double tap on any of your messages to ${reply ? "reply" : "edit"} them.`}
                   onLongPress={() => Miscellaneous.displayToast(`When double tapping on any of your own messages, you can now start an edit!`, 'tooltip')}
-                  leading={<FormRow.Icon style={styles.icon} source={Icons.Settings.Edit} />}
+                  leading={<FormRow.Icon style={styles.icon} source={reply ? Icons.Settings.Reply : Icons.Settings.Edit} />}
                   trailing={<FormSwitch
-                     value={doubleTapToEdit}
+                     value={reply}
                      onValueChange={() => {
-                        storage.doubleTapToEdit = !storage.doubleTapToEdit;
-                        setDoubleTapToEdit(storage.doubleTapToEdit);
+                        storage.reply = !storage.reply;
+                        setReply(storage.reply);
                      }}
                   />}
                />

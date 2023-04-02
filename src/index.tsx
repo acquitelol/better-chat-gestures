@@ -10,6 +10,7 @@ const ChatInputRef = findByProps("insertText");
 const MessageStore = findByStoreName("MessageStore");
 const UserStore = findByStoreName("UserStore");
 const Messages = findByProps("sendMessage", "startEditMessage");
+const ReplyManager = findByProps("createPendingReply");
 
 const BetterChatGestures: Plugin = {
     unpatchChat: null,
@@ -90,23 +91,31 @@ const BetterChatGestures: Plugin = {
                     authorId: message?.author?.id,
                     isAuthor: message?.author?.id === UserStore.getCurrentUser()?.id
                 });
-    
-                if ((nativeEvent as NativeEvent)?.authorId !== UserStore.getCurrentUser()?.id
-                    || this.currentTapIndex !== 2) return this.doubleTapState({ 
+
+                if (this.currentTapIndex !== 2) 
+                    return this.doubleTapState({ 
                         state: "INCOMPLETE", 
                         nativeEvent
                     });
-    
-                clearTimeout(timeoutTap);
-                const MessageContent = (nativeEvent as NativeEvent).content;
-    
-                Messages.startEditMessage(
-                    ChannelID,
-                    MessageID,
-                    MessageContent
-                );
 
-                ChatInputRef.focus();
+                clearTimeout(timeoutTap);
+                if (storage.reply) {
+                    ReplyManager.createPendingReply({
+                        channel: ChannelID,
+                        message: MessageID,
+                        shouldMention: true
+                    })
+                } else if (!storage.reply && (nativeEvent as NativeEvent)?.authorId === UserStore.getCurrentUser()?.id) {
+                    const MessageContent = (nativeEvent as NativeEvent).content;
+    
+                    Messages.startEditMessage(
+                        ChannelID,
+                        MessageID,
+                        MessageContent
+                    );
+    
+                    ChatInputRef.focus();
+                }
 
                 this.currentTapIndex = 0;
                 this.doubleTapState({ 
