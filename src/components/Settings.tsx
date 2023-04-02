@@ -58,6 +58,7 @@ export default () => {
    const [tapUsernameMention, setTapUsernameMention] = React.useState(storage.tapUsernameMention);
    const [reply, setReply] = React.useState(storage.reply);
    const [delay, setDelay] = React.useState(storage.delay);
+   const isAndroid = ReactNative.Platform.OS !== "android"
 
    return <ScrollView>
       <Credits 
@@ -69,13 +70,14 @@ export default () => {
             <View style={[styles.container]}>
                <FormRow
                   label="Tap Username to Mention"
-                  subLabel="Allows you to tap on a username to mention them instead of opening their profile."
+                  subLabel={`Allows you to tap on a username to mention them instead of opening their profile.${isAndroid ? "This option is disabled on Android." : ""}`}
                   onLongPress={() => Miscellaneous.displayToast(`By default, Discord opens a profile when tapping on a username in chat. With this, it now mentions them, like on Android.`, 'tooltip')}
                   leading={<FormRow.Icon style={styles.icon} source={tapUsernameMention ? Icons.Forum : Icons.Failed} />}
                   trailing={<FormSwitch
                      style={{ marginLeft: -optionalMargin }}
-                     value={tapUsernameMention}
+                     value={isAndroid ? false : tapUsernameMention}
                      onValueChange={() => {
+                        if (isAndroid) return;
                         storage.tapUsernameMention = !storage.tapUsernameMention;
                         setTapUsernameMention(storage.tapUsernameMention);
                      }}
