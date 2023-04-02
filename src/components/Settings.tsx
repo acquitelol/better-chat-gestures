@@ -82,7 +82,7 @@ export default () => {
                         setTapUsernameMention(storage.tapUsernameMention);
                      }}
                   />}
-                  disabled={ReactNative.Platform.OS !== "android"}
+                  disabled={isAndroid}
                />
                <FormDivider />
                <FormRow
