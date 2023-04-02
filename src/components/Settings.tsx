@@ -58,7 +58,7 @@ export default () => {
    const [tapUsernameMention, setTapUsernameMention] = React.useState(storage.tapUsernameMention);
    const [reply, setReply] = React.useState(storage.reply);
    const [delay, setDelay] = React.useState(storage.delay);
-   const isAndroid = ReactNative.Platform.OS !== "android"
+   const isAndroid = ReactNative.Platform.OS === "android"
 
    return <ScrollView>
       <Credits 
