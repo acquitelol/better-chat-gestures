@@ -10,7 +10,7 @@ import { findByProps } from '@vendetta/metro';
 import { semanticColors } from '@vendetta/ui';
 import { ReactNative } from '@vendetta/metro/common';
 
-const { FormRow, FormSwitch, FormDivider } = Forms;
+const { FormRow, FormSwitch, FormDivider, FormInput, FormText } = Forms;
 const { ScrollView, View, Text } = General;
 
 const Router = findByProps('transitionToGuild')
@@ -55,6 +55,7 @@ export default () => {
 
    const [tapUsernameMention, setTapUsernameMention] = React.useState(storage.tapUsernameMention);
    const [reply, setReply] = React.useState(storage.reply);
+   const [delay, setDelay] = React.useState(storage.delay);
 
    return <ScrollView>
       <Credits 
@@ -91,6 +92,18 @@ export default () => {
                      }}
                   />}
                />
+               <FormDivider />
+               <FormInput
+                  value={delay}
+                  onChange={v => {
+                     storage.delay = v
+                     setDelay(delay)
+                  }}
+                  placeholder={"300"}
+                  title='Delay'
+               />
+               <FormDivider />
+               <FormText>The maximum delay between taps until the double tap event is cancelled. This is 300ms by default.</FormText>
             </View>
          </SectionWrapper>
          <SectionWrapper label='Source'>

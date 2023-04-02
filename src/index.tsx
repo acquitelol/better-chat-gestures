@@ -48,7 +48,8 @@ const BetterChatGestures: Plugin = {
             ios: true,
             default: true
         })
-        storage.doubleTapToEdit ??= true;
+        storage.reply ??= false;
+        storage.delay ??= 300;
 
         // patch chat area to modify methods
         this.unpatchChat = after("render", Chat.prototype, (_, res) => {
@@ -72,8 +73,6 @@ const BetterChatGestures: Plugin = {
 
             // patch tapping a message to require 2 taps and author and provide edit event if both conditions are met
             Boolean(res.props?.onTapMessage) && after("onTapMessage", res?.props, (args) => {
-                if (!storage.doubleTapToEdit) return;
-
                 const { nativeEvent }: { nativeEvent: DefaultNativeEvent } = args[0];
                 const ChannelID = nativeEvent.channelId;
                 const MessageID = nativeEvent.messageId;
@@ -82,7 +81,7 @@ const BetterChatGestures: Plugin = {
     
                 let timeoutTap = setTimeout(() => {
                     this.currentTapIndex = 0;
-                }, 300);
+                }, storage.delay);
     
                 const channel = ChannelStore.getChannel(ChannelID);
                 const message = MessageStore.getMessage(ChannelID, MessageID);
