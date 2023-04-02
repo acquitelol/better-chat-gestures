@@ -103,7 +103,9 @@ export default () => {
                   title='Delay'
                />
                <FormDivider />
-               <FormText>The maximum delay between taps until the double tap event is cancelled. This is 300ms by default.</FormText>
+               <FormText style={{ padding: 10 }}>
+                  The maximum delay between taps until the double tap event is cancelled. This is 300ms by default.
+               </FormText>
             </View>
          </SectionWrapper>
          <SectionWrapper label='Source'>
