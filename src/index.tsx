@@ -7,6 +7,7 @@ import { DefaultNativeEvent, DoubleTapStateProps, Plugin, NativeEvent } from "./
 
 const Chat = findByName("Chat");
 const ChatInputRef = findByProps("insertText");
+const ChannelStore = findByStoreName("ChannelStore");
 const MessageStore = findByStoreName("MessageStore");
 const UserStore = findByStoreName("UserStore");
 const Messages = findByProps("sendMessage", "startEditMessage");
@@ -83,6 +84,7 @@ const BetterChatGestures: Plugin = {
                     this.currentTapIndex = 0;
                 }, 300);
     
+                const channel = ChannelStore.getChannel(ChannelID);
                 const message = MessageStore.getMessage(ChannelID, MessageID);
     
                 Object.assign(nativeEvent, { 
@@ -101,8 +103,8 @@ const BetterChatGestures: Plugin = {
                 clearTimeout(timeoutTap);
                 if (storage.reply) {
                     ReplyManager.createPendingReply({
-                        channel: ChannelID,
-                        message: MessageID,
+                        channel,
+                        message,
                         shouldMention: true
                     })
                 } else if (!storage.reply && (nativeEvent as NativeEvent)?.authorId === UserStore.getCurrentUser()?.id) {
