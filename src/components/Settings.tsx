@@ -15,7 +15,7 @@ const { FormRow, FormSwitch, FormDivider, FormInput, FormText } = Forms;
 const { ScrollView, View, Text } = General;
 const optionalMargin = parseInt(getDebugInfo()?.discord?.version.split(".")[0]) > 163 ? 15 : 0;
 
-const Router = findByProps('transitionToGuild')
+const Router = findByProps('transitionToGuild', "openURL")
 
 const styles = stylesheet.createThemedStyleSheet({
    icon: {
@@ -67,11 +67,11 @@ export default () => {
       <View style={{marginTop: 20}}>
          <SectionWrapper label='Preferences'>
             <View style={[styles.container]}>
-               {ReactNative.Platform.OS !== "android" && <FormRow
+               <FormRow
                   label="Tap Username to Mention"
                   subLabel="Allows you to tap on a username to mention them instead of opening their profile."
                   onLongPress={() => Miscellaneous.displayToast(`By default, Discord opens a profile when tapping on a username in chat. With this, it now mentions them, like on Android.`, 'tooltip')}
-                  leading={<FormRow.Icon style={styles.icon} source={Icons.Forum} />}
+                  leading={<FormRow.Icon style={styles.icon} source={tapUsernameMention ? Icons.Forum : Icons.Failed} />}
                   trailing={<FormSwitch
                      style={{ marginLeft: -optionalMargin }}
                      value={tapUsernameMention}
@@ -80,11 +80,12 @@ export default () => {
                         setTapUsernameMention(storage.tapUsernameMention);
                      }}
                   />}
-               />}
+                  disabled={ReactNative.Platform.OS !== "android"}
+               />
                <FormDivider />
                <FormRow
                   label={`Double Tap To ${reply ? "Reply" : "Edit"}`}
-                  subLabel={`Allows you to tap double tap on any of your messages to ${reply ? "reply" : "edit"} them.`}
+                  subLabel={`Allows you to tap double tap on any of your messages to ${reply ? "reply to" : "edit"} them.`}
                   onLongPress={() => Miscellaneous.displayToast(`When double tapping on any of your own messages, you can now start an edit!`, 'tooltip')}
                   leading={<FormRow.Icon style={styles.icon} source={reply ? Icons.Settings.Reply : Icons.Settings.Edit} />}
                   trailing={<FormSwitch
@@ -100,7 +101,7 @@ export default () => {
                <FormInput
                   value={delay}
                   onChange={v => {
-                     storage.delay = v
+                     storage.delay = v == "" ? 300 : Number(v)
                      setDelay(delay)
                   }}
                   placeholder={"300"}
