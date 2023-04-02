@@ -9,9 +9,11 @@ import { Icons, Miscellaneous, Constants } from "../Common";
 import { findByProps } from '@vendetta/metro';
 import { semanticColors } from '@vendetta/ui';
 import { ReactNative } from '@vendetta/metro/common';
+import { getDebugInfo } from '@vendetta/debug';
 
 const { FormRow, FormSwitch, FormDivider, FormInput, FormText } = Forms;
 const { ScrollView, View, Text } = General;
+const optionalMargin = parseInt(getDebugInfo()?.discord?.version.split(".")[0]) > 163 ? 15 : 0;
 
 const Router = findByProps('transitionToGuild')
 
@@ -71,6 +73,7 @@ export default () => {
                   onLongPress={() => Miscellaneous.displayToast(`By default, Discord opens a profile when tapping on a username in chat. With this, it now mentions them, like on Android.`, 'tooltip')}
                   leading={<FormRow.Icon style={styles.icon} source={Icons.Forum} />}
                   trailing={<FormSwitch
+                     style={{ marginLeft: -optionalMargin }}
                      value={tapUsernameMention}
                      onValueChange={() => {
                         storage.tapUsernameMention = !storage.tapUsernameMention;
@@ -85,6 +88,7 @@ export default () => {
                   onLongPress={() => Miscellaneous.displayToast(`When double tapping on any of your own messages, you can now start an edit!`, 'tooltip')}
                   leading={<FormRow.Icon style={styles.icon} source={reply ? Icons.Settings.Reply : Icons.Settings.Edit} />}
                   trailing={<FormSwitch
+                     style={{ marginLeft: -optionalMargin }}
                      value={reply}
                      onValueChange={() => {
                         storage.reply = !storage.reply;
@@ -100,7 +104,7 @@ export default () => {
                      setDelay(delay)
                   }}
                   placeholder={"300"}
-                  title='Delay'
+                  title='Maximum Delay'
                />
                <FormDivider />
                <FormText style={{ padding: 10 }}>
@@ -115,7 +119,7 @@ export default () => {
                   subLabel={`Open the repository of ${manifest.name} externally.`}
                   onLongPress={() => Miscellaneous.displayToast(`Opens the repository of ${manifest.name} on GitHub in an external page to view any source code of the plugin.`, 'tooltip')}
                   leading={<FormRow.Icon style={styles.icon} source={Icons.Open} />}
-                  trailing={() => <FormRow.Arrow />}
+                  trailing={() => <FormRow.Arrow style={{ marginLeft: -optionalMargin }} />}
                   onPress={() => Router.openURL(Constants.plugin.source)}
                />
             </View>
