@@ -100,22 +100,34 @@ const BetterChatGestures: Plugin = {
                     });
 
                 clearTimeout(timeoutTap);
+                if ((nativeEvent as NativeEvent)?.authorId === UserStore.getCurrentUser()?.id) {
+                    if (storage.userEdit) {
+                        const MessageContent = (nativeEvent as NativeEvent).content;
+    
+                        Messages.startEditMessage(
+                            ChannelID,
+                            MessageID,
+                            MessageContent
+                        );
+        
+                        ChatInputRef.focus();
+                    } else {
+                        ReplyManager.createPendingReply({
+                            channel,
+                            message,
+                            shouldMention: true
+                        })
+                    }
+
+                    return;
+                }
+                
                 if (storage.reply) {
                     ReplyManager.createPendingReply({
                         channel,
                         message,
                         shouldMention: true
                     })
-                } else if (!storage.reply && (nativeEvent as NativeEvent)?.authorId === UserStore.getCurrentUser()?.id) {
-                    const MessageContent = (nativeEvent as NativeEvent).content;
-    
-                    Messages.startEditMessage(
-                        ChannelID,
-                        MessageID,
-                        MessageContent
-                    );
-    
-                    ChatInputRef.focus();
                 }
 
                 this.currentTapIndex = 0;

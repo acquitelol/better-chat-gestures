@@ -57,6 +57,7 @@ export default () => {
 
    const [tapUsernameMention, setTapUsernameMention] = React.useState(storage.tapUsernameMention);
    const [reply, setReply] = React.useState(storage.reply);
+   const [userEdit, setUserEdit] = React.useState(storage.userEdit);
    const [delay, setDelay] = React.useState(storage.delay);
    const isAndroid = ReactNative.Platform.OS === "android"
 
@@ -87,8 +88,8 @@ export default () => {
                <FormDivider />
                <FormRow
                   label={`Double Tap To ${reply ? "Reply" : "Edit"}`}
-                  subLabel={`Allows you to tap double tap on any of your messages to ${reply ? "reply to" : "edit"} them.`}
-                  onLongPress={() => Miscellaneous.displayToast(`When double tapping on any of your own messages, you can now start an edit!`, 'tooltip')}
+                  subLabel={`Allows you to tap double tap on any messages to ${reply ? "reply to" : "edit"} them.`}
+                  onLongPress={() => Miscellaneous.displayToast(`When double tapping on any messages, you can now start an edit!`, 'tooltip')}
                   leading={<FormRow.Icon style={styles.icon} source={reply ? Icons.Settings.Reply : Icons.Settings.Edit} />}
                   trailing={<FormSwitch
                      style={{ marginLeft: -optionalMargin }}
@@ -96,6 +97,21 @@ export default () => {
                      onValueChange={() => {
                         storage.reply = !storage.reply;
                         setReply(storage.reply);
+                     }}
+                  />}
+               />
+               <FormDivider />
+               <FormRow
+                  label={`${userEdit ? "Editing" : "Replying"} to your own messages`}
+                  subLabel={`Allows you to tap double tap on any of your own messages to ${userEdit ? "reply to" : "edit"} them.`}
+                  onLongPress={() => Miscellaneous.displayToast(`When double tapping on any of your own messages, you can now ${userEdit ? "start an edit!" : "reply to them!"}`, 'tooltip')}
+                  leading={<FormRow.Icon style={styles.icon} source={userEdit ? Icons.Settings.Edit : Icons.Settings.Reply} />}
+                  trailing={<FormSwitch
+                     style={{ marginLeft: -optionalMargin }}
+                     value={userEdit}
+                     onValueChange={() => {
+                        storage.userEdit = !storage.userEdit;
+                        setUserEdit(storage.userEdit);
                      }}
                   />}
                />
