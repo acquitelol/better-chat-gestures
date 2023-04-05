@@ -5,7 +5,7 @@ import { storage } from '@vendetta/plugin';
 import { useProxy } from '@vendetta/storage';
 import Credits from "./Dependent/Credits";
 import SectionWrapper from "./Dependent/SectionWrapper";
-import { Icons, Miscellaneous, Constants } from "../Common";
+import { Icons, Miscellaneous, Constants } from "../common";
 import { findByProps } from '@vendetta/metro';
 import { semanticColors } from '@vendetta/ui';
 import { ReactNative } from '@vendetta/metro/common';
