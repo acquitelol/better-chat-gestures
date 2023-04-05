@@ -100,6 +100,9 @@ const BetterChatGestures: Plugin = {
                     });
 
                 clearTimeout(timeoutTap);
+
+                ChatInputRef.openSystemKeyboard()
+
                 if ((nativeEvent as NativeEvent)?.authorId === UserStore.getCurrentUser()?.id) {
                     if (storage.userEdit) {
                         const MessageContent = (nativeEvent as NativeEvent).content;
@@ -109,16 +112,12 @@ const BetterChatGestures: Plugin = {
                             MessageID,
                             MessageContent
                         );
-
-                        ChatInputRef.focus();
                     } else {
                         ReplyManager.createPendingReply({
                             channel,
                             message,
                             shouldMention: true
-                        })
-
-                        ChatInputRef.focus();
+                        });
                     }
 
                     return;
@@ -131,8 +130,6 @@ const BetterChatGestures: Plugin = {
                         shouldMention: true
                     })
                 }
-
-                ChatInputRef.focus();
 
                 this.currentTapIndex = 0;
                 this.doubleTapState({ 
