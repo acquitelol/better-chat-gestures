@@ -109,7 +109,7 @@ const BetterChatGestures: Plugin = {
                             MessageID,
                             MessageContent
                         );
-        
+
                         ChatInputRef.focus();
                     } else {
                         ReplyManager.createPendingReply({
@@ -117,6 +117,8 @@ const BetterChatGestures: Plugin = {
                             message,
                             shouldMention: true
                         })
+
+                        ChatInputRef.focus();
                     }
 
                     return;
@@ -129,6 +131,8 @@ const BetterChatGestures: Plugin = {
                         shouldMention: true
                     })
                 }
+
+                ChatInputRef.focus();
 
                 this.currentTapIndex = 0;
                 this.doubleTapState({ 
