@@ -50,7 +50,8 @@ const BetterChatGestures: Plugin = {
             ios: true,
             default: true
         })
-        storage.reply ??= false;
+        storage.reply ??= true;
+        storage.userEdit ??= true;
         storage.delay ??= 300;
 
         // patch chat area to modify methods
