@@ -104,7 +104,6 @@ const BetterChatGestures: Plugin = {
 
                 clearTimeout(timeoutTap);
 
-                ChatInputRef.openSystemKeyboard()
 
                 if ((nativeEvent as NativeEvent)?.authorId === UserStore.getCurrentUser()?.id) {
                     if (storage.userEdit) {
@@ -123,6 +122,8 @@ const BetterChatGestures: Plugin = {
                         });
                     }
 
+                    ChatInputRef.openSystemKeyboard()
+
                     return;
                 }
                 
@@ -132,6 +133,8 @@ const BetterChatGestures: Plugin = {
                         message,
                         shouldMention: true
                     })
+
+                    ChatInputRef.openSystemKeyboard()
                 }
 
                 this.currentTapIndex = 0;
