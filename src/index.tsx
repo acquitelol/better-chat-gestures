@@ -1,9 +1,9 @@
 import { findByName, findByProps, findByStoreName } from "@vendetta/metro";
 import { ReactNative } from "@vendetta/metro/common";
 import { after, instead } from "@vendetta/patcher";
-import { storage } from "@vendetta/plugin";
+import { storage, manifest } from "@vendetta/plugin";
 import Settings from "./components/Settings";
-import { DefaultNativeEvent, DoubleTapStateProps, Plugin, NativeEvent } from "./types";
+import { DefaultNativeEvent, DoubleTapStateProps, Plugin, NativeEvent } from "./def";
 
 const Chat = findByName("Chat");
 const ChatInputRef = findByProps("insertText");
@@ -38,7 +38,9 @@ const BetterChatGestures: Plugin = {
             })
         }
 
-        return console.log("DoubleTapState", stateObject)
+        return manifest.authors.find(author => author.id === UserStore.getCurrentUser().id) 
+            ? console.log("DoubleTapState", stateObject) 
+            : void 0;
     },
 
     onLoad() {
