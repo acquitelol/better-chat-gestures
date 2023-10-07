@@ -24,9 +24,11 @@ export interface DoubleTapStateProps {
 
 // Properties of entire Plugin object
 export interface Plugin {
-    unpatchChat: Function | null;
+    unpatchGetter: Function | null;
+    unpatchHandlers: Function | null;
     currentTapIndex: number;
     doubleTapState: (arg: DoubleTapStateProps) => void;
+    patchHandlers: (handlers: any) => void;
     onLoad: () => void;
     onUnload: () => void;
     settings: React.ComponentType
